@@ -1,0 +1,6 @@
+.env
+node_modules/
+newman/
+*token*
+*secret*
+*private*
