@@ -8,7 +8,7 @@
   },
   "item": [
     {
-      "name": "Get a boards",
+      "name": "Get boards",
       "event": [
         {
           "listen": "test",
@@ -88,7 +88,7 @@
       "response": []
     },
     {
-      "name": "Creating a new board",
+      "name": "Create a new board",
       "event": [
         {
           "listen": "test",
@@ -145,50 +145,7 @@
       "response": []
     },
     {
-      "name": "Delete a board",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {\r",
-              "    pm.response.to.have.status(200);\r",
-              "})"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/boards/{{boardId}}?key={{key}}&token={{token}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "boards",
-            "{{boardId}}"
-          ],
-          "query": [
-            {
-              "key": "key",
-              "value": "{{key}}"
-            },
-            {
-              "key": "token",
-              "value": "{{token}}"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Creating a new list",
+      "name": "Create a new list",
       "event": [
         {
           "listen": "test",
@@ -243,7 +200,7 @@
       "response": []
     },
     {
-      "name": "Add a card in a list",
+      "name": "Add a card to a list",
       "event": [
         {
           "listen": "test",
@@ -301,7 +258,7 @@
       "response": []
     },
     {
-      "name": "Get a cards from a Board",
+      "name": "Get cards from a board",
       "event": [
         {
           "listen": "test",
@@ -423,7 +380,7 @@
       "response": []
     },
     {
-      "name": "Delete Card",
+      "name": "Delete a card",
       "event": [
         {
           "listen": "test",
@@ -450,6 +407,49 @@
           "path": [
             "cards",
             "{{cardId}}"
+          ],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{key}}"
+            },
+            {
+              "key": "token",
+              "value": "{{token}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete a board",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/boards/{{boardId}}?key={{key}}&token={{token}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "boards",
+            "{{boardId}}"
           ],
           "query": [
             {
@@ -493,11 +493,11 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": ""
+      "value": "https://api.trello.com/1"
     },
     {
       "key": "boardName",
-      "value": ""
+      "value": "Tablica z A"
     },
     {
       "key": "boardId",
@@ -505,7 +505,7 @@
     },
     {
       "key": "listName",
-      "value": ""
+      "value": "Testowa lista"
     },
     {
       "key": "listId",
@@ -513,7 +513,7 @@
     },
     {
       "key": "cardName",
-      "value": ""
+      "value": "Nie działą system logowania"
     },
     {
       "key": "cardId",
@@ -521,11 +521,11 @@
     },
     {
       "key": "updCardName",
-      "value": ""
+      "value": "Updated name"
     },
     {
       "key": "updDesc",
-      "value": ""
+      "value": "Tes Test TEst"
     }
   ]
 }
