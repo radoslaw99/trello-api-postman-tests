@@ -1,57 +1,91 @@
-# Trello API Testing Project
+# Trello REST API Tests — Postman, Newman and Jenkins
 
-This project is a practical REST API testing project created in Postman for the Trello API.
+This repository contains a practical REST API testing project created for the Trello API.
 
-The main goal of the project is to demonstrate realistic API testing skills, including request validation, dynamic variables, request chaining, automated test execution with Newman and basic continuous integration using Jenkins.
+The project demonstrates API request validation, automated assertions, dynamic variables, request chaining, command-line collection execution with Newman and basic continuous integration using a Jenkins Freestyle job.
 
 ## Project Overview
 
-The Postman collection simulates a complete testing flow for Trello boards, lists and cards.
+The Postman collection performs a connected CRUD-style test flow for Trello boards, lists and cards.
 
-The collection performs the following actions:
+The automated flow:
 
 1. Retrieves existing Trello boards
 2. Creates a new board
-3. Creates a new list on the created board
-4. Creates a card on the list
+3. Creates a new list on the board
+4. Creates a new card on the list
 5. Retrieves cards from the board
 6. Updates the created card
 7. Deletes the card
 8. Deletes the test board
 
-The requests are connected into one automated flow. Data created in one request is saved and reused in subsequent requests.
+Resources created during the test run are saved as collection variables and reused in subsequent requests.
 
-## Tested Areas
+This makes the collection independent of hardcoded board, list and card identifiers.
 
-The collection includes automated tests for:
+## Tested API Operations
 
-* HTTP status codes
+| Method   | Operation                                           |
+| -------- | --------------------------------------------------- |
+| `GET`    | Retrieve boards belonging to the authenticated user |
+| `POST`   | Create a new board                                  |
+| `POST`   | Create a new list                                   |
+| `POST`   | Add a card to a list                                |
+| `GET`    | Retrieve cards from a board                         |
+| `PUT`    | Update a card                                       |
+| `DELETE` | Delete a card                                       |
+| `DELETE` | Delete a board                                      |
+
+## Automated Test Coverage
+
+The collection contains JavaScript test scripts created in Postman.
+
+The automated checks include:
+
+* HTTP status code validation
 * Response body validation
-* Response headers
-* Response time
-* Data types in API responses
-* Required response properties
-* Correct relation between board, list and card IDs
-* Dynamic variables
+* Response header validation
+* Response time validation
+* Response property validation
+* Data type validation
+* Board, list and card relationship validation
+* Created resource name validation
+* Updated card name and description validation
+* Dynamic ID extraction
 * Request chaining
-* Successful creation, modification and deletion of resources
-
-The tests were written in JavaScript using Postman test scripts.
+* Resource cleanup after test execution
 
 ## Request Chaining
 
-The project uses request chaining to create a dynamic and reusable test flow.
+The collection uses dynamic variables to connect requests into one automated flow.
 
-Examples:
+The following identifiers are saved during execution:
 
-* After creating a board, its ID is saved as `boardId`
-* After creating a list, its ID is saved as `listId`
-* After creating a card, its ID is saved as `cardId`
-* Saved IDs are used in subsequent requests to retrieve, update or delete resources
+* `boardId` after creating a board
+* `listId` after creating a list
+* `cardId` after creating a card
 
-This approach avoids hardcoded resource IDs and makes the collection closer to real API testing performed in a software project.
+The saved values are then used in later requests.
 
-## Tools Used
+Example flow:
+
+```text
+Create board
+    ↓ save boardId
+Create list
+    ↓ save listId
+Create card
+    ↓ save cardId
+Get and update card
+    ↓
+Delete card
+    ↓
+Delete board
+```
+
+This approach avoids hardcoded resource IDs and represents a realistic API testing workflow.
+
+## Tools and Technologies
 
 * Postman
 * Trello REST API
@@ -60,6 +94,7 @@ This approach avoids hardcoded resource IDs and makes the collection closer to r
 * Jenkins
 * Git
 * GitHub
+* Windows Batch
 
 ## Project Structure
 
@@ -71,57 +106,112 @@ trello-api-postman-tests/
 │   └── Trello.environment-example.json
 ├── scripts/
 │   └── run-newman-from-postman-api.bat
-├── README.md
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
 
-## Environment Variables
+## Required Credentials
 
-The repository contains an example Postman environment without real API credentials.
+To execute the tests, you need:
 
-Required environment variables:
+* A Trello API key
+* A Trello API token
+
+The repository contains an example Postman environment with placeholder values:
 
 ```text
-key = YOUR_API_KEY_HERE
+key = YOUR_KEY_HERE
 token = YOUR_TOKEN_HERE
 ```
 
-Example collection variables:
+Replace these placeholders locally or provide the credentials through Newman environment variables.
 
-```text
-baseUrl = https://api.trello.com/1
-boardName = Test Board
-listName = Test List
-cardName = Test Card
-updCardName = Updated Test Card
-updDesc = Updated card description
-```
-
-Real API keys and tokens are not stored in the repository.
+Real API keys and tokens are not stored in this repository.
 
 ## Running the Collection in Postman
 
 1. Clone or download this repository.
 2. Open Postman.
-3. Import the collection from the `collections` folder.
-4. Import the example environment from the `environments` folder.
-5. Add your own Trello API key and token.
-6. Select the imported environment.
-7. Run the complete collection using Postman Collection Runner.
+3. Import:
 
-## Newman Execution
+```text
+collections/Trello.postman_collection.json
+```
 
-The Postman collection was also executed from the command line using Newman.
+4. Import:
 
-In the implemented configuration, Newman retrieved the current collection and environment directly through the Postman API.
+```text
+environments/Trello.environment-example.json
+```
 
-The following values were provided as environment variables:
+5. Add your Trello API key and token to the imported environment.
+6. Select the imported environment in Postman.
+7. Open the collection.
+8. Run the complete collection using Postman Collection Runner.
+
+The requests should be executed in their existing order because later requests use identifiers created by earlier requests.
+
+## Running the Collection Locally with Newman
+
+### 1. Install Newman
+
+Newman can be installed globally using npm:
+
+```bash
+npm install -g newman
+```
+
+Verify the installation:
+
+```bash
+newman --version
+```
+
+### 2. Run the Exported Collection
+
+From the main project directory, run:
+
+```bat
+newman run "collections/Trello.postman_collection.json" -e "environments/Trello.environment-example.json" --env-var "key=YOUR_TRELLO_KEY" --env-var "token=YOUR_TRELLO_TOKEN"
+```
+
+Replace:
+
+```text
+YOUR_TRELLO_KEY
+YOUR_TRELLO_TOKEN
+```
+
+with your own credentials.
+
+The values passed through `--env-var` override the placeholder values stored in the example environment file.
+
+### Windows Multiline Version
+
+The same command can be written as a multiline Windows Batch command:
+
+```bat
+newman run "collections/Trello.postman_collection.json" ^
+-e "environments/Trello.environment-example.json" ^
+--env-var "key=YOUR_TRELLO_KEY" ^
+--env-var "token=YOUR_TRELLO_TOKEN"
+```
+
+This method executes the collection exported to this GitHub repository.
+
+## Newman Execution Through the Postman API
+
+During the Jenkins integration, Newman retrieved the current Postman collection and environment directly through the Postman API.
+
+This allowed Jenkins to execute the latest saved version from Postman without manually exporting the collection after every change.
+
+The following values were passed to the Newman command:
 
 * `POSTMAN_API_KEY`
 * `TRELLO_KEY`
 * `TRELLO_TOKEN`
 
-Example Newman command:
+Example command:
 
 ```bat
 newman run "https://api.getpostman.com/collections/COLLECTION_UID" ^
@@ -131,62 +221,125 @@ newman run "https://api.getpostman.com/collections/COLLECTION_UID" ^
 --env-var "token=%TRELLO_TOKEN%"
 ```
 
-The public batch script available in the `scripts` folder contains placeholders instead of real collection identifiers and credentials.
+The public example script is available here:
 
-Newman returns a non-zero exit code when a test fails, allowing an external CI tool to mark the execution as unsuccessful.
+```text
+scripts/run-newman-from-postman-api.bat
+```
+
+The script contains placeholders instead of real collection identifiers and credentials.
 
 ## Jenkins Integration
 
-The Newman execution was integrated into a Jenkins Freestyle job.
+The Newman command was integrated into a locally configured Jenkins Freestyle job.
 
-Jenkins was configured locally using the Jenkins interface and the `Execute Windows batch command` build step.
+Jenkins used the following build step:
+
+```text
+Execute Windows batch command
+```
 
 The Jenkins job:
 
 1. Started the Newman command
-2. Retrieved the Postman collection and environment through the Postman API
-3. Passed the required Trello and Postman credentials as environment variables
-4. Executed the complete API test flow
-5. Displayed the Newman test results in the Jenkins console
-6. Marked the build as failed when at least one automated test failed
+2. Retrieved the current collection through the Postman API
+3. Retrieved the current environment through the Postman API
+4. Passed the required Postman and Trello credentials
+5. Executed the complete API test collection
+6. Displayed Newman results in Jenkins Console Output
+7. Marked the build as failed when an automated test failed
 
-Sensitive values were stored using Jenkins Credentials and were not added directly to the command or committed to GitHub.
+The implemented flow was:
 
-The Jenkins job was not connected directly to this GitHub repository. The job configuration was created locally in Jenkins, while this repository stores the Postman collection, example environment and a public version of the Newman execution script.
+```text
+Postman API
+    ↓
+Jenkins Freestyle Job
+    ↓
+Windows Batch Command
+    ↓
+Newman CLI
+    ↓
+Trello REST API Tests
+```
 
-## Security
+The Jenkins job was configured locally through the Jenkins interface.
 
-The following sensitive values are not stored in the repository:
+Jenkins was not connected directly to this GitHub repository, and the project did not use a `Jenkinsfile`.
 
-* Trello API key
-* Trello API token
-* Postman API key
-* Private Postman environment values
+This repository documents the implemented process and stores:
 
-The example environment contains placeholders that must be replaced locally.
+* The exported Postman collection
+* The example Postman environment
+* A public version of the Newman execution script
+* Project documentation
 
-## Current Status
+## Credential Management
+
+Sensitive credentials used by the Jenkins job were managed using Jenkins Credentials.
+
+The following values were not hardcoded in the public script:
+
+```text
+POSTMAN_API_KEY
+TRELLO_KEY
+TRELLO_TOKEN
+```
+
+They were provided to the Newman command as environment variables.
+
+The repository does not intentionally store:
+
+* Trello API keys
+* Trello API tokens
+* Postman API keys
+* Private environment files
+* Passwords
+* Jenkins credential values
+
+## Newman Exit Codes
+
+Newman returns a non-zero exit code when at least one request or automated assertion fails.
+
+Because of this behavior, Jenkins can automatically distinguish between:
+
+```text
+Successful Newman execution → successful Jenkins build
+Failed Newman test         → failed Jenkins build
+```
+
+This enables the API collection to function as part of a basic continuous integration process.
+
+## Current Project Status
 
 The project currently includes:
 
-* A working Postman collection
-* A complete CRUD-style API test flow
-* Automated assertions written in JavaScript
+* A working Trello API Postman collection
+* Eight connected API requests
+* A complete CRUD-style test flow
+* JavaScript assertions
 * Dynamic request chaining
-* Collection execution using Newman CLI
+* Collection variables
+* Postman Collection Runner execution
+* Local command-line execution with Newman
+* Newman execution through the Postman API
 * Integration with a Jenkins Freestyle job
-* Credentials managed using Jenkins Credentials
-* A public Newman execution script without sensitive data
+* Jenkins Credentials usage
+* Automatic Jenkins build failure after a failed Newman test
+* A public execution script without sensitive credentials
 
 ## Future Improvements
 
-Possible future improvements include:
+Planned improvements may include:
 
-* Generating HTML test reports
-* Generating JUnit reports for Jenkins
 * Adding more negative test scenarios
-* Adding tests for invalid authorization
-* Adding data-driven tests
+* Testing invalid authorization
+* Testing missing required parameters
+* Adding data-driven testing with CSV or JSON files
+* Generating Newman HTML reports
+* Generating JUnit XML reports
+* Publishing test reports in Jenkins
+* Adding a cleanup script that runs after unexpected failures
 * Creating a Jenkins Pipeline using a `Jenkinsfile`
 * Connecting Jenkins directly to the GitHub repository
 * Automatically triggering tests after repository changes
