@@ -332,7 +332,6 @@ The project currently includes:
 
 Planned improvements may include:
 
-* Adding more negative test scenarios
 * Testing invalid authorization
 * Testing missing required parameters
 * Adding data-driven testing with CSV or JSON files
